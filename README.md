@@ -27,6 +27,8 @@ module.exports = {
 }
 ```
 
+9.Add .env file with `TAILWIND_MODE=watch`
+
 Simple scenario is set and ready to test
 
 1. Add color class to `app/page.tsx` for example `bg-red-500`
