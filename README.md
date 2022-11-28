@@ -1,34 +1,56 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Reproduce steps
 
-## Getting Started
+1. Create project with `npx create-next-app@latest my-project --experimental-app --typescript --eslint`
+2. Install tailwind needed packages `npm install -D tailwindcss@latest postcss@latest autoprefixer@latest`
+3. Initialize tailwind config files with: `npx tailwindcss init -p`
+4. Remove all built in styles in `app/globals.css`
+5. Add imports to `globals.css`
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Clean `app/page.tsx` and leave on simple `div`
+7. Remove `app/page.module.css`
+8. Replace content of `tailwind.config.js` with
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./app/**/*.{js,ts,jsx,tsx}", "./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Simple scenario is set and ready to test
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+1. Add color class to `app/page.tsx` for example `bg-red-500`
+2. Run app with `npm run dev`
+3. Enter `localhost:3000`
+4. Change background color class to something different(ex. `bg-red-600`) and save file
+5. File `.next/static/css/app_globals_css.css` has updated and added class exists at the end of file
+6. Background color on the page disappears because `css` file is not reloaded and new class does not exist in currently loaded file
+7. Reload page manually - change should be now visible
+8. Change background class again
+9. Add anything to `app/globals.css` and save it, still css is not refreshed
 
-## Learn More
+After each step in the developer console message `[Fast Refresh] rebuilding` is printed. In the terminal, log below is printed
 
-To learn more about Next.js, take a look at the following resources:
+```
+wait  - compiling...
+event - compiled client and server successfully in 178 ms (332 modules)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Tested on chrome, firefox and microsoft edge.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Workaround for chrome
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. Open developer console
+2. Go to settings -> workspace
+3. Add folder `~/.next/static/css`
+4. After that step, all the css changes should be visible immidiately after fast refresh
